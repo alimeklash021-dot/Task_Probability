@@ -1,0 +1,124 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        double[] data = { 115, 182, 191, 31, 196, 1099, 5, 172, 10, 179,
+                          83, 21, 20, 21, 186, 177, 195, 193, 188, 199,
+                          62, 109, 105, 183, 110 };
+        int n = 25;
+
+        
+        double[] sorted = new double[n];
+        for (int i = 0; i < n; i++) sorted[i] = data[i];
+
+        // Bubble Sort
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (sorted[j] > sorted[j + 1])
+                {
+                    double temp = sorted[j];
+                    sorted[j] = sorted[j + 1];
+                    sorted[j + 1] = temp;
+                }
+
+        //Mean
+        double sum = 0;
+        for (int i = 0; i < n; i++) sum += data[i];
+        double mean = sum / n;
+        Console.WriteLine("Mean= " + Math.Round(mean, 4));
+
+        //Mode
+        double mode = sorted[0];
+        int maxCount = 1, count = 1;
+        for (int i = 1; i < n; i++)
+        {
+            if (sorted[i] == sorted[i - 1]) count++;
+            else count = 1;
+            if (count > maxCount) { maxCount = count; mode = sorted[i]; }
+        }
+        Console.WriteLine("Mode= " + mode);
+
+        //Median
+        double median;
+        if (n % 2 == 1)
+            median = sorted[n / 2];
+        else
+            median = (sorted[n / 2 - 1] + sorted[n / 2]) / 2.0;
+        Console.WriteLine("Median= " + median);
+
+        //Variance
+        double variance = 0;
+        for (int i = 0; i < n; i++)
+            variance += (data[i] - mean) * (data[i] - mean);
+        variance = variance / n;
+        Console.WriteLine("Variance= " + Math.Round(variance, 4));
+
+        //P20
+        double p20 = GetPercentile(sorted, n, 20);
+        Console.WriteLine("P20= " + p20);
+
+        //P50
+        double p50 = GetPercentile(sorted, n, 50);
+        Console.WriteLine("P50= " + p50);
+
+        //Quartiles
+        double q1 = GetPercentile(sorted, n, 25);
+        double q2 = GetPercentile(sorted, n, 50);
+        double q3 = GetPercentile(sorted, n, 75);
+
+        Console.WriteLine("Third Quartile= " + q3);
+        Console.WriteLine("Second Quartile= " + q2);
+        Console.WriteLine("Third Quartile= " + q3);
+
+        //Range
+        double range = sorted[n - 1] - sorted[0];
+        Console.WriteLine("Range= " + range);
+
+        //IQR
+        double iqr = q3 - q1;
+        Console.WriteLine("IQR= " + iqr);
+
+        //Standard Deviation
+        double std = Math.Sqrt(variance);
+        Console.WriteLine("(Std Deviation= " + Math.Round(std, 4));
+
+        // Sum of Deviations 
+        double sumDev = 0;
+        for (int i = 0; i < n; i++)
+            sumDev += Math.Abs(data[i] - mean);
+        Console.WriteLine("Sum of Deviations= " + Math.Round(sumDev, 4));
+
+        //  Outlier Detection
+        Console.WriteLine("\n Outlier Detection");
+        double lower = q1 - 1.5 * iqr;
+        double upper = q3 + 1.5 * iqr;
+        Console.WriteLine("Lower Fence = " + lower);
+        Console.WriteLine("Upper Fence = " + upper);
+        Console.WriteLine();
+
+        for (int i = 0; i < n; i++)
+        {
+            if (data[i] < lower || data[i] > upper)
+                Console.WriteLine(data[i] + " -- OUTLIER");
+            else
+                Console.WriteLine(data[i] + " -- Normal");
+        }
+
+        Console.ReadKey();
+    }
+
+    //Percentile
+    static double GetPercentile(double[] sorted, int n, double p)
+    {
+        double rank = (p / 100.0) * n;
+        int idx = (int)Math.Ceiling(rank) - 1;
+        int idx2 = (int)Math.Ceiling(rank);
+
+        if (rank == Math.Floor(rank) && idx2 < n)
+            return (sorted[idx] + sorted[idx2]) / 2.0;
+        else
+            return sorted[idx];
+    }
+}
